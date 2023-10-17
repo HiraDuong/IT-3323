@@ -1,0 +1,29 @@
+program CheckUpperTriangularMatrix;
+var
+    n, i, j: integer;
+    matrix: array [1..100, 1..100] of integer;
+    isUpperTriangular: integer;
+
+begin
+    write("Nhap kich thuoc ma tran (n): ");
+    read(n);
+
+    write("Nhap ma tran:\n");
+    for i := 1 to n do
+        for j := 1 to n do
+            read(matrix[i, j]);
+
+    isUpperTriangular := 1;  { Giả sử ban đầu là tam giác trên }
+
+    { Kiểm tra nếu có phần tử dưới đường chéo khác 0 }
+    for i := 2 to n do
+        for j := 1 to i - 1 do
+            if matrix[i, j] <> 0 then
+                isUpperTriangular := 0;  { Nếu có, đặt là 0 và thoát }
+
+    { In kết quả }
+    if isUpperTriangular = 1 then
+        write("Ma tran la tam giac tren")
+    else
+        write("Ma tran khong phai tam giac tren");
+end.

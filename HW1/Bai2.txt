@@ -1,0 +1,35 @@
+program TinhTong;
+var
+    so1, so2, tong: integer;
+
+begin
+    write("Nhap so thu nhat: ");
+    read(so1);
+
+    write("Nhap so thu hai: ");
+    read(so2);
+
+    tong := so1 + so2;
+
+    write("Tong cua hai so la: ", tong);
+end.
+
+{Phân tích trái}
+
+
+<program> -> "program" <identifier> ";" <block> "."
+<block> -> <declarations> <compound-statement>
+<declarations> -> <var-declaration> 
+<var-declaration> -> "var" <identifier-list> ":" <type> ";"
+<identifier-list> -> <identifier> "," <identifier-list> 
+<identifier> -> "TinhTong"
+<type> -> "integer"
+<compound-statement> -> "begin" <statement-list> "end"
+<statement-list> -> <statement> ";" <statement-list> 
+<statement> -> <write-statement>
+<write-statement> -> "write" "(" <expression> ")"
+<expression> -> <term> "+" <expression> 
+<term> -> <factor> 
+<factor> -> <variable> 
+<variable> -> "Nhap so thu nhat" 
+<constant> -> "Nhap so thu hai" 
