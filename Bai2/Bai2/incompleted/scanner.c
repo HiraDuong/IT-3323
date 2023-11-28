@@ -47,11 +47,13 @@ void skipComment() {
 Token* readIdentKeyword(void) {
   int index = 1;
   Token * identKey  = makeToken(TK_NONE,lineNo,colNo);
-  identKey->string[0] = toupper(currentChar);
+  identKey->string[0] = (currentChar);
   readChar();
-  while (currentChar != EOF && (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT))
+  while (currentChar != EOF && (charCodes[currentChar] == CHAR_LETTER || 
+  charCodes[currentChar] == CHAR_DIGIT|| 
+  charCodes[currentChar] == CHAR_UNDERSCORE))
   {
-    identKey->string[index++] = toupper(currentChar);
+    identKey->string[index++] = (currentChar);
     readChar();
   }
   
@@ -60,7 +62,10 @@ Token* readIdentKeyword(void) {
   if(identKey->tokenType  == TK_NONE){
     identKey->tokenType = TK_IDENT;
   }
-
+  size_t len = strlen(identKey->string);
+  if(len>10){
+    identKey->string[10] = '\0';
+  }
   return identKey;
 }
 
@@ -85,16 +90,58 @@ Token* readNumber(void) {
 
 Token* readConstChar(void) {
   // TODO
-
-  readChar();
   Token* constChar = makeToken(TK_CHAR,lineNo,colNo);
-  constChar->string[0] = currentChar;
-  constChar->string[1] = "\0";
   readChar();
-  if(charCodes[currentChar] == CHAR_SINGLEQUOTE){
+  constChar->string[0] = currentChar;
+  //  case '\' '\t' '\n'
+  if(charCodes[currentChar] ==  CHAR_BACKSLASH){
     readChar();
-    return constChar;
+    if(currentChar == 't' || currentChar == 'n'){
+      constChar->string[1] = currentChar;
+      constChar->string[2] = "\0";
+      readChar(); // bỏ qua '
+      readChar();
+      return  constChar;
+    }
+
+    if(charCodes[currentChar] == CHAR_SINGLEQUOTE){
+      constChar->string[1] = "\0";
+      readChar();
+      return  constChar;
+    }
+
   }
+ 
+  else{
+    constChar->string[0] = '\0';
+    readChar(); //skip  ''
+    if(charCodes[currentChar] == CHAR_SINGLEQUOTE){
+      readChar();
+      return constChar;
+    }
+    
+  }
+}
+
+Token* readConstString(void){
+  int index = 1;
+  
+
+  Token * constString  = makeToken(TK_STRING,lineNo,colNo);
+  readChar();
+  constString->string[0] = currentChar;
+  readChar();
+  while (currentChar != EOF && charCodes[currentChar]!= CHAR_DOUBLEQUOTE){
+    constString->string[index++] = currentChar;
+    
+    readChar();
+  }
+  constString->string[index] = '\0';
+   
+  readChar();  
+
+  return constString;
+
 }
 
 Token* getToken(void) {
@@ -182,10 +229,15 @@ Token* getToken(void) {
   case CHAR_LT:{
     readChar();
     if(charCodes[currentChar] == CHAR_EQ){
-    Token* token =  makeToken(SB_LE,lineNo,colNo);
+     token =  makeToken(SB_LE,lineNo,colNo);
     }
     else {
-      Token* token =  makeToken(SB_LT,lineNo,colNo-1);
+      if(charCodes[currentChar] == CHAR_GT){
+      token =  makeToken(SB_NEQ,lineNo,colNo-1);
+    }
+      else {
+        token =  makeToken(SB_LT,lineNo,colNo-1);
+        }
       }
     readChar();
     
@@ -234,7 +286,21 @@ Token* getToken(void) {
       return token;
     }
   }
-  
+
+  //case []
+  case CHAR_LSB:{
+    token = makeToken(SB_LSEL,lineNo,colNo);
+    readChar();
+    return token;
+  }
+    case CHAR_RSB:{
+    token = makeToken(SB_RSEL,lineNo,colNo);
+    readChar();
+    return token;
+  }
+
+  case CHAR_DOUBLEQUOTE: return readConstString();
+
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
@@ -256,6 +322,7 @@ void printToken(Token *token) {
   case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
   case TK_CHAR: printf("TK_CHAR(\'%s\')\n", token->string); break;
   case TK_EOF: printf("TK_EOF\n"); break;
+  case TK_STRING: printf("TK_STRING(%s)\n", token->string); break;
 
   case KW_PROGRAM: printf("KW_PROGRAM\n"); break;
   case KW_CONST: printf("KW_CONST\n"); break;
@@ -277,7 +344,9 @@ void printToken(Token *token) {
   case KW_DO: printf("KW_DO\n"); break;
   case KW_FOR: printf("KW_FOR\n"); break;
   case KW_TO: printf("KW_TO\n"); break;
-
+  case KW_SWITCH:printf("KW_SWITCH\n"); break;
+  case KW_RETURN:printf("KW_RETURN\n"); break;
+  
   case SB_SEMICOLON: printf("SB_SEMICOLON\n"); break;
   case SB_COLON: printf("SB_COLON\n"); break;
   case SB_PERIOD: printf("SB_PERIOD\n"); break;

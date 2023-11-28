@@ -23,5 +23,5 @@ error.o: error.c
 	${CC} ${CFLAGS} error.c
 
 clean:
-	rm -f *.o *~
+	del -f *.o *~ *.exe
 
