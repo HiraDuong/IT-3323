@@ -419,14 +419,8 @@ void compileAssignSt(void)
   // TODO
   eat(TK_IDENT);
   // argument: Case funtion
-  if (lookAhead->tokenType == SB_LSEL)
-  {
-    compileIndexes();
-  }
-  else
-  {
-    compileArguments();
-  }
+  eat(SB_ASSIGN);
+  compileExpression();
   assert("Assign statement parsed ....");
 }
 
@@ -525,7 +519,7 @@ void compileCondition(void)
 {
   // TODO
   compileExpression();
-    printf("%s","****startCondition2\n");
+   
   compileCondition2();
 }
 
@@ -587,8 +581,6 @@ void compileExpression(void)
     break;
   }
     
-
-    printToken(lookAhead);
   assert("Expression parsed");
 }
 
@@ -661,7 +653,12 @@ void compileFactor(void)
     eat(TK_IDENT);
     if (lookAhead->tokenType == SB_LPAR)
     {
+      
       compileArguments();
+    }
+     if (lookAhead->tokenType == SB_LSEL)
+    {
+      compileIndexes();
     }
     break;
   case SB_LPAR:
