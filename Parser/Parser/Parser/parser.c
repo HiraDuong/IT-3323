@@ -5,7 +5,7 @@
  */
 
 #include <stdlib.h>
-
+#include <stdio.h>
 #include "reader.h"
 #include "scanner.h"
 #include "parser.h"
@@ -204,7 +204,7 @@ void compileProcDecl(void)
   // TODO
   eat(KW_PROCEDURE);
   eat(TK_IDENT);
-  compileParam();
+  compileParams();
   eat(SB_SEMICOLON);
   compileBlock();
   eat(SB_SEMICOLON);
@@ -362,12 +362,15 @@ void compileParam(void)
 void compileStatements(void)
 {
   // TODO
+   printf("\033[1;33m STATEMENTS START\033[0m\n");
   compileStatement();
   compileStatements2();
 }
 
 void compileStatements2(void)
 {
+   printf("\033[1;32m STATEMENTS2 START\033[0m\n");
+
   // TODO
   if (lookAhead->tokenType == SB_SEMICOLON)
   {
@@ -384,6 +387,7 @@ void compileStatement(void)
   switch (lookAhead->tokenType)
   {
   case TK_IDENT:
+
     compileAssignSt();
     break;
   case KW_CALL:
@@ -418,7 +422,7 @@ void compileAssignSt(void)
   assert("Parsing an assign statement ....");
   // TODO
   eat(TK_IDENT);
-  // argument: Case funtion
+  compileIndexes();
   eat(SB_ASSIGN);
   compileExpression();
   assert("Assign statement parsed ....");
@@ -430,6 +434,7 @@ void compileCallSt(void)
   // TODO
   eat(KW_CALL);
   eat(TK_IDENT);
+
   compileArguments();
   assert("Call statement parsed ....");
 }
@@ -439,6 +444,7 @@ void compileGroupSt(void)
   assert("Parsing a group statement ....");
   // TODO
   eat(KW_BEGIN);
+   printf("\033[1;31m BEGIN START.\033[0m\n");
   compileStatements();
   eat(KW_END);
   assert("Group statement parsed ....");
@@ -576,7 +582,7 @@ void compileExpression(void)
     compileExpression2();
     break;
   default:
-    eat(lookAhead->tokenType);
+    //eat(lookAhead->tokenType);
     compileExpression2();
     break;
   }
@@ -617,6 +623,8 @@ void compileExpression3(void)
 
 void compileTerm(void)
 {
+  
+
   // TODO
   compileFactor();
   compileTerm2();
@@ -646,14 +654,17 @@ void compileTerm2(void)
 
 void compileFactor(void)
 {
+  
   // TODO
+  
   switch (lookAhead->tokenType)
   {
+ 
   case TK_IDENT:
     eat(TK_IDENT);
     if (lookAhead->tokenType == SB_LPAR)
     {
-      
+  
       compileArguments();
     }
      if (lookAhead->tokenType == SB_LSEL)
@@ -668,9 +679,10 @@ void compileFactor(void)
     break;
 
   default:
-    return;
+    compileUnsignedConstant();
     break;
   }
+
 }
 
 void compileIndexes(void)
