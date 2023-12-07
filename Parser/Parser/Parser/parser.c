@@ -362,24 +362,25 @@ void compileParam(void)
 void compileStatements(void)
 {
   // TODO
-   printf("\033[1;33m STATEMENTS START\033[0m\n");
   compileStatement();
   compileStatements2();
 }
 
 void compileStatements2(void)
 {
-   printf("\033[1;32m STATEMENTS2 START\033[0m\n");
 
   // TODO
-  if (lookAhead->tokenType == SB_SEMICOLON)
+  // null case
+  if (lookAhead->tokenType == KW_END)
+  {
+    return NULL;
+  }
+  else
   {
     eat(SB_SEMICOLON);
     compileStatement();
     compileStatements2();
   }
-  else
-    return;
 }
 
 void compileStatement(void)
@@ -444,7 +445,6 @@ void compileGroupSt(void)
   assert("Parsing a group statement ....");
   // TODO
   eat(KW_BEGIN);
-   printf("\033[1;31m BEGIN START.\033[0m\n");
   compileStatements();
   eat(KW_END);
   assert("Group statement parsed ....");
@@ -525,7 +525,7 @@ void compileCondition(void)
 {
   // TODO
   compileExpression();
-   
+
   compileCondition2();
 }
 
@@ -582,17 +582,17 @@ void compileExpression(void)
     compileExpression2();
     break;
   default:
-    //eat(lookAhead->tokenType);
+    // eat(lookAhead->tokenType);
     compileExpression2();
     break;
   }
-    
+
   assert("Expression parsed");
 }
 
 void compileExpression2(void)
 {
- 
+
   // TODO
   compileTerm();
   compileExpression3();
@@ -600,7 +600,6 @@ void compileExpression2(void)
 
 void compileExpression3(void)
 {
-
 
   // TODO
   switch (lookAhead->tokenType)
@@ -623,7 +622,6 @@ void compileExpression3(void)
 
 void compileTerm(void)
 {
-  
 
   // TODO
   compileFactor();
@@ -654,20 +652,20 @@ void compileTerm2(void)
 
 void compileFactor(void)
 {
-  
+
   // TODO
-  
+
   switch (lookAhead->tokenType)
   {
- 
+
   case TK_IDENT:
     eat(TK_IDENT);
     if (lookAhead->tokenType == SB_LPAR)
     {
-  
+
       compileArguments();
     }
-     if (lookAhead->tokenType == SB_LSEL)
+    if (lookAhead->tokenType == SB_LSEL)
     {
       compileIndexes();
     }
@@ -682,7 +680,6 @@ void compileFactor(void)
     compileUnsignedConstant();
     break;
   }
-
 }
 
 void compileIndexes(void)
